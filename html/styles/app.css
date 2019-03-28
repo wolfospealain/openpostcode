@@ -1,0 +1,134 @@
+body {
+	margin: 0px;
+	font-family: Verdana;
+	font-size:14px;
+	color: black;
+	background-color: lightgray ;
+}
+
+a {
+	color: #000000;
+}
+
+a.visited {
+	color: #000000;
+}
+
+table {
+	margin: auto;
+	/* width: 100%; 
+	max-width: 420px; */
+	align: center;
+	border-spacing: 2px;
+}
+
+.toolbar td {
+	border: solid lightgray 1px;
+	text-align: center;
+	padding: 4px;
+	border-radius:0px;
+	font-size:12px;
+	background-color:gray;
+}
+
+.toolbar a {
+	color:white;
+}
+
+.messagebox {
+	border:2px solid #AAAAAA;
+	background-color: white;
+	text-align: center;
+	padding: 20px;
+	box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+	-moz-box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+	-webkit-box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+	border-radius:9px;
+	font-size:14px; 
+}
+
+.touch td {
+	border:2px solid #AAAAAA;
+	background-color: white;
+	text-align: center;
+	padding: 4px;
+	box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+	-moz-box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+	-webkit-box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+	border-radius:9px;
+	font-size:14px; 
+}
+
+.touch td:hover {
+	border: 2px solid black;
+	box-shadow: 0px 0px 10px #CCCCCC, 0 10px 15px #EEEEEE inset, 1px 1px 10px #666666;
+	-moz-box-shadow: 0px 0px 10px #CCCCCC, 0 10px 15px #EEEEEE inset, 1px 1px 10px #666666;
+	-webkit-box-shadow: 0px 0px 10px #CCCCCC, 0 10px 15px #EEEEEE inset, 1px 1px 10px #666666;
+	cursor: hand; cursor: pointer;
+}
+
+.touch td.back {
+	background-color: #EEEEEE;
+	box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #DDDDDD inset;
+	-moz-box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #DDDDDD inset;
+	-webkit-box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #DDDDDD inset;
+	font-size:12px; 
+}
+
+.touch td.back:hover {
+	border: 2px solid black;
+	box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #DDDDDD inset, 1px 1px 10px #666666;
+	-moz-box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #DDDDDD inset, 1px 1px 10px #666666;
+	-webkit-box-shadow: 0px 0px 3px #CCCCCC, 0 10px 15px #DDDDDD inset, 1px 1px 10px #666666;
+}
+
+.touch td.mini {
+	font-size:10px; 
+	padding: 5px;
+	box-shadow: 0px 0px 1px #CCCCCC, 0 5px 5px #DDDDDD inset;
+	-moz-box-shadow: 0px 0px 1px #CCCCCC, 0 5px 5px #DDDDDD inset;
+	-webkit-box-shadow: 0px 0px 1px #CCCCCC, 0 5px 5px #DDDDDD inset;
+
+}
+
+.popup {
+	font-size:small; 
+}
+
+.popup a {
+	text-decoration:none;
+}
+
+.touch td.text {
+	background-color: #FFFFFF;
+	box-shadow: 0px 3px 3px #CCCCCC, 0px 10px 15px #DDDDDD inset;
+	-moz-box-shadow: 0px 3px 3px #CCCCCC, 0px 10px 15px #DDDDDD inset;
+	-webkit-box-shadow: 0px 3px 3px #CCCCCC, 0px 10px 15px #DDDDDD inset;
+	text-align: left;
+	padding: 10px;
+	cursor: auto;
+}
+
+.touch input{
+	background:transparent;
+	border:0;
+	border-color:transparent;
+	text-align:center; 
+	font-size:18px; 
+}​
+
+.mobiledialog {
+	font-size:10px;
+}
+
+.mobiledialog table{
+	font-size:9px;
+}
+
+.mobiledialog div{
+	font-size:10px;
+}
+
+.mobiledialog td{
+	font-size:11px;
+}

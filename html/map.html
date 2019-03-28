@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<!-- change '_blank' to '_system' for app -->
+
+<html>
+<head>
+<script src="phonegap.js"></script>
+<script type="text/javascript" src="script/objects.js?0805141958"></script> <!-- ?0805141958 cache busting -->
+<script type="text/javascript" src="script/utility.js?0805141958"></script> 
+<script type="text/javascript" src="script/parameters.js?0805141958"></script> 
+<script type="text/javascript" src="script/interface.js?0805141958"></script>
+<script type="text/javascript" src="web/interface.js?0805141958"></script> <!-- may not exist -->
+<script type="text/javascript" src="mobile/interface.js?0805141958"></script> <!-- may not exist -->
+<script language="Javascript">
+	cachebust();
+</script>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/> 
+<title>Open Postcode</title> 
+<link href="styles/openpostcode.css?0805141958" rel="stylesheet" type="text/css" /> 
+<link href="styles/google.css?0805141958" rel="stylesheet" type="text/css" /> 
+<link href="styles/app.css?0805141958" rel="stylesheet" type="text/css" /> 
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script> 
+<script type="text/javascript" src="script/nominatim.js?0805141958"></script> 
+<script type="text/javascript" src="googleanalytics.js?0805141958"></script> <!-- may not exist -->
+<script type="text/javascript" src="script/googlemaps.js?0805141958"></script> 
+<script type="text/javascript" src="script/googlegeocoding.js?0805141958"></script> 
+<script type="text/javascript" src="script/currentlocation.js?0805141958"></script> 
+<script type="text/javascript" src="script/openpostcode.js?0805141958"></script> 
+<!--http://www.fieldenmaps.info/cconv/web/cconv_api_1-2-003.pdf-->
+<script type="text/javascript" src="script/cconv/cconv_defs.js?0805141958"></script>
+<script type="text/javascript" src="script/cconv/cconv_func.js?0805141958"></script>
+<script type="text/javascript" src="script/cconv/cconv_trans.js?0805141958"></script>
+<script type="text/javascript" src="script/cconv/cconv_params.js?0805141958"></script>
+<script type="text/javascript" src="mobile/utility.js?0805141958"></script> <!-- may not exist -->
+<script type="text/javascript" src="mobile/googlemaps.js?0805141958"></script> <!-- may not exist --> 
+<script language="JavaScript">
+// region match by filename if on website
+if(document.URL.match(/^https?:/)){
+	for(i=parameter.length-1;i>-1;i--){
+		if (document.location.pathname.search(parameter[i].filename)>0){
+				region=parameter[i].region
+			}
+	}
+	if(region=="Geohash-36"){auto==false;document.getElementById('checkautoregion').checked=false;}
+}
+</script>
+<script type="text/javascript" src="geohash/interface.js?0805141958"></script> <!-- may not exist -->
+</head>
+
+
+<body onload="populateregions();getquery();setInterval(function(){geolocate();},60000);mapOPCs(document.getElementById('opc').value);document.title='Open Postcode '+document.getElementById('opc').value; boxes=true; pin=true; document.getElementById('checkpinoption').checked=true; document.getElementById('checkboxoption').checked=true;callback();" >
+
+<!-- toolbar -->
+
+<div class="toolbar" id="showcontactmenu" style="position:fixed;bottom:5px;right:0;z-index:1;" onMouseOver="if(!turnoffmouseover){hidePageElement('place');hidePageElement('showplace');showPageElement('contactmenu');}" onclick="hidePageElement('place');hidePageElement('showplace');showPageElement('contactmenu');return null;">
+<table cellpadding=4 cellspacing=4 border=0><tr>
+<td style="border: solid gray 1px;"><a href="http://play.google.com/store/apps/details?id=com.OpenPostcode" target="_blank" style="text-decoration:none;">APP</a></td>
+<td style="border: solid gray 1px;"><a href="index.html" target="_self" style="text-decoration:none;">TEXT ONLY</a></td>
+</tr></table>
+</div>
+
+<div class="toolbar" id="contactmenu" style="position:fixed;bottom:5px;right:0;z-index:1;display:none;" onMouseOver="if(!turnoffmouseover){hidePageElement('showplace');showPageElement('contactmenu')}" onMouseOut="hidePageElement('contactmenu');showPageElement('showplace');">
+<table cellpadding=4 cellspacing=4 border=0><tr>
+<td><a href="http://twitter.com/openpostcode" style="text-decoration:none;">@OPENPOSTCODE</a></td>
+<td><a href="mailto:openpostcodeireland@gmail.com" style="text-decoration:none;">OPENPOSTCODEIRELAND@GMAIL.COM</a></td>
+<td><a href="http://play.google.com/store/apps/details?id=com.OpenPostcode" target="_blank" style="text-decoration:none;">APP</a></td>
+<td><a href="index.html" style="text-decoration:none;">TEXT ONLY</a></td>
+</tr></table>
+
+</div>
+
+<!-- error message -->
+	
+<div id="error" onclick="hidePageElement('error');" style="position:fixed;top:0px;left:0px;background-color:black;z-index:1;">
+<table><tr><td>
+<div id="errormessage" style="font-size:7pt;color:white;">
+</td></tr></table>
+</div>
+
+<!-- about -->
+
+<div class="mobiledialog" id="about" style="display:none;position:fixed;top:0px;left:0px;width:100%;height:100%;z-index:2;overflow:auto;" onclick="hidePageElement('about');">
+<table height=100% width=100%><tr><td valign=middle align=center>
+<div style="max-width:80%;z-index:3;overflow:auto;" class="messagebox">
+<table border=0 cellpadding=20 cellspacing=10 width=100%><tr><td>
+	<table class="menu" width=100% cellpadding=8 cellspacing=0><tr>
+	<td width=20 valign=top align=center>
+	<a href="http://www.openpostcode.org"><img src="images/logo-100.png" width=100 height=100></a><br>
+	<a href="http://twitter.com/openpostcode" imageanchor="1" target="target"><img border="0" height="20" src="images/twitter.png" width="20"></a> 
+	<a href="http://mapscribbles.blogspot.ie/" imageanchor="1" target="target"><img border="0" height="20" src="images/blogger.png" width="20"></a>
+	</td>
+	<td align=left valign=middle>
+	<div id="headline"><h2>Open Postcode</h2><strong>Ireland's Most Precise Geolocation Postcode: smart, free & open-source; covering the island of Ireland.</strong></div>
+<div id="abouttext" style="display:none;"> 
+<p>Postcode generator and mapping, using the opensource Open Postcode formats. Find, link, email, SMS, and tweet your current location postcode. Map and get directions to Open Postcodes. Explore locations. Identify your location with a simple memorable, global, easily communicated, technology independent, short code, language-friendly code.
+
+<ul>
+<strong>Drag the map to reposition. The postcode for the map centre point is always calculated. Long-press (mobile) or right-click (web) the map to calculate a particular point. Find your best postcode with <small>&lt;GET SHORTER CODE&gt;</small>.</strong>
+</ul>
+
+<p>Compatible codes are available for a number of territories and purposes using the same Open Postcode algorithm:<ul><div id='otherregions'></div></ul>
+
+<!--<p><strong>Ireland Postcode:</strong> Calculated to 8 characters plus checksum, 6 characters should be adequate for general addressing. Some will be less. Zoom out to produce and test shorter, easier codes. The checksum is optional. Use the code to text friends a location or to quickly record a location for yourself. Ideally Ireland would have an official postcode so that codes could be used for addressing and for use with emergency services and other location services such as roadside rescue. Other geolocation codes are available for Ireland: Loc8Code and GoCode. Both achieve the same ends but are proprietary codes used under license. Only the Open Postcode is freely calculated and used and is the most accurate code available. See OpenPostcode.org for more information. 
+<a name="codes"><p>Sample Irish codes are included for: <ul><li><a href="nct.html"><font color="white">NCT</font></a><li><a href="gaa.html"><font color="white">Cork GAA</font></a><li><a href="coil.html"><font color="white">Irish Lights</font></a></ul>-->
+
+<p><small><i>Please note that the Open Postcode does not provide the location information - this is provided by your device, either via GPS, WiFi or cell connection. Check your device settings and use your own map reading to verify.</small></i>
+
+<p><small>Free to copy. All coding is on this page and associated javascript. Opensource (<a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a>), extensible, and logical. Google Maps courtesy of Google Maps API. Irish Transverse Mercator (ITM) to GPS conversion code by fieldenmaps.info API. Address data from OpenStreetMap.</small>
+<p><a href="http://play.google.com/store/apps/details?id=com.OpenPostcode"><img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_app_rgb_wo_45.png" align=right /></a>
+</div>
+<a href="http://sourceforge.net/projects/openpostcode/">SourceForge Files</a>, <a href="http://play.google.com/store/apps/details?id=com.OpenPostcode">Android App</a>, <a href="http://build.phonegap.com/apps/121402/share">Other Devices</a>, <a href="http://openpostcode.x10.mx/button.html">Browser Toolbar Applet</a>.
+<p>Documentation: <a href="http://www.openpostcode.org">www.OpenPostcode.org</a>.<br>Contact: <a href="http://twitter.com/openpostcode">@OpenPostcode</a>, <a href="mailto:openpostcodeireland@gmail.com">OpenPostcodeIreland@gmail.com</a>.
+<p>
+	</td></tr></table>
+	<table class="touch" class="mini"><tr><td onclick="hidePageElement('about');"><small><strong>CLOSE</strong></small></td></tr></table>
+</div>
+</td></tr></table>
+</td></tr></table>
+</td></tr></table>
+</div>
+
+<!-- details -->
+
+<div id="details" style="display:none;position:fixed;top:5pt;right:5pt;max-width:450px;z-index:2;overflow:auto;align:center;" class="messagebox mobiledialog">
+		<strong>Open Postcode</strong> for Map Centre
+		<small><div onclick="showPageElement('coordinates');showPageElement('details_region');hidePageElement('details');showPageElement('place');hidePageElement('showplace');hidePageElement('mainmenu');hidePageElement('menu');if(region=='Ireland'){showPageElement('details_showprecisiontext');}else hidePageElement('details_showprecisiontext');" id='details_coordinates'></div></small>
+		<br>
+		<table class="touch">
+		<tr><td><input size=12 type="text" id="details_opc" name="opc" onclick="this.select();" onmouseover="this.style.background='#CCCCCC';" onmouseout="this.style.background='transparent';" onchange="if(regionparameters(region).casesensitive==false){this.value=this.value.toUpperCase()};hidePageElement('GPSaccuracy');bluedot=false;document.getElementById('opc').value=this.value;mapOPCs(this.value);showPageElement('current_location');" style="font-weight:bold" class="touch" title="OpenPostcode"></td></tr>
+		</table>
+
+		<small><div id='details_check_message'></div></small><div style="margin-top:5px;" onclick="zoomout(document.getElementById('opc').value);hidePageElement('GPSaccuracy');showPageElement('current_location');" ><small>&lt;GET SHORTER CODE&gt;</small></div>
+		<center><small><div id='details_region' style="position:relative;max-width:400px;align:center;margin-top:10px;"></div></small></center>
+		<p>
+		<!-- emergency -->
+		<div id="emergency_menu" style="display:none;">
+		<strong><div id="emergency" style="color:red;"></div></strong>
+		<small><i>NOTE location is provided by your device GPS/WiFi/cell/network connection. Verify device settings and map reading.</small></i>
+		<p>
+		<table class="touch">
+			<tr><td onclick="window.location.href='tel:112'">Dial 112</td></tr>
+		</table>
+		<p>
+		</div>
+		<!-- osm data -->
+		<strong>OpenStreetMap Data Nearby</strong>
+		<center><small><div id='details_placeresults' style="position:relative;max-width:400px;align:center;"></div></small></center>
+		<p>
+		<table class="touch" cellspacing=10><tr><td id='details_showprecisiontext' onclick="showPageElement('details_precision');" style="display:none;"><small>Precision Table</small></td><td onclick="showPageElement('kml');"><small>KML</small></td><td onclick="hidePageElement('details');showPageElement('links');showPageElement('geohashcode');showPageElement('worldcode');if(region=='Geohash-36'){hidePageElement('geohashcode')};if(region=='World'){hidePageElement('worldcode');}"><small>Web Links</small></td><td onclick="hidePageElement('irish_send');if(region=='Ireland'){showPageElement('irish_send');};bluedot=false;boxes=true;pin=true;showPageElement('postcode');showPageElement('send');hidePageElement('menu');hidePageElement('mainmenu');hidePageElement('details');mapOPCs(document.getElementById('opc').value);"><small><strong>Send Location</strong></small></td></tr></table>
+		<p>
+		<!-- gps data -->
+		<div id='GPSinfo'></div>
+		<font color="red"><div id='GPSerror'></div></font>
+		<p>
+		<table class="touch" cellspacing=10><tr><td onclick="hidePageElement('emergency_menu');hidePageElement('details');showPageElement('postcode');showPageElement('menu');showPageElement('showplace');"><strong>MAP</strong></td><td onclick="hidePageElement('emergency_menu');hidePageElement('details');showPageElement('postcode');showPageElement('mainmenu');hidePageElement('place');hidePageElement('showplace');hidePageElement('menu');"><small>MENU</small></td><td onclick="showPageElement('search');showPageElement('place');hidePageElement('showplace');hidePageElement('emergency_menu');hidePageElement('details');"><small>SEARCH</small></td><td onclick="findlocation();showPageElement('details');hidePageElement('place');hidePageElement('showplace');hidePageElement('mainmenu');hidePageElement('postcode');"><small>GET<img align=absmiddle src="images/geolocation.png" height=25>LOCATION</small></td></tr></table>
+</div>
+
+<!-- precision information -->
+
+<div id="details_precision" class="messagebox mobiledialog" style="display:none;position:fixed;top:15px;right:15pt;z-index:2;overflow:auto;">
+	<div id='details_precisiontext'></div>
+	<table class="touch"><tr><td onclick="hidePageElement('details_precision');"><small><strong>CLOSE</strong></small></td></tr></table>
+</div>
+
+<!-- kml -->
+
+<div id="kml" style="display:none;position:fixed;top:15px;right:15px;z-index:2;overflow:auto;" class="messagebox">
+	<big><strong>Google Earth KML</strong></big><br>
+	<textarea id="KMLtext" title="click; ctrl-a & ctrl-c to copy" name="log" rows=5 cols=45></textarea>
+	<table class="touch"><tr><td onclick="hidePageElement('kml');"><small><strong>CLOSE</strong></small></td></tr></table>
+</div>
+
+<!-- openpostcode links -->
+
+<div id="links" style="display:none;position:fixed;top:15px;right:15px;z-index:2;overflow:auto;" class="messagebox">
+	<big><strong>Open Postcode Links</strong></big><p>
+	<div id="links_coordinates"></div>
+	<br>
+	<div id="localcode"></div>
+	<div id="worldcode"></div>
+	<div id="geohashcode"></div>
+	<br>
+	Change Code: <select id="links_regions" onchange="tracklocation=false;showPageElement('worldcode');showPageElement('geohashcode');auto=true;regionstart=this.value;selectedregion=this.options[this.selectedIndex].text;document.getElementById('checkautoregion').checked=false;if(coordinateregion(OPCmapping(document.getElementById('opc').value).position,region)!=selectedregion && this.selectedIndex>1){document.getElementById('opc').value=regionstart;mapOPCs(document.getElementById('opc').value);};region=selectedregion;auto=false;mapcoordinates();if(region=='Geohash-36'){hidePageElement('geohashcode')};if(region=='World'){hidePageElement('worldcode');};"></select>
+	<p>
+	<table class="touch"><tr><td onclick="hidePageElement('links');showPageElement('postcode');showPageElement('menu');"><small><strong>CLOSE</strong></small></td></tr></table>
+</div>
+
+<!-- search -->
+
+<div id="search" style="display:none;position:fixed;top:5px;right:5px;z-index:2;" class="messagebox">
+	<strong><big><div id='search_opc'></div></big></strong>
+	<small><div id='search_check_message'></div></small>
+	<input id="address" type="textbox" class="touch"> 
+	<p>
+	<table class="touch""><tr><td onclick="addresssearch();">Search Address</td><td onclick="showPageElement('current_location');hidePageElement('GPSaccuracy');showPageElement('details_region');showPageElement('details');hidePageElement('search');if(region=='Ireland'){showPageElement('details_showprecisiontext');}else hidePageElement('details_showprecisiontext');">Details</td><td onclick="hidePageElement('search');showPageElement('postcode');showPageElement('menu');"><small><strong>CLOSE</strong></small></td></tr></table>
+	<div style="position:absolute;top:10px;left:10px;"  onclick="findlocation();"><img src="images/geolocation.png" height=25></div>
+</div>
+
+<!-- coordinates -->
+
+<div id="coordinates" class="messagebox" style="display:none;position:fixed;right:5px;top:5px;z-index:2;">
+	<form name="coords">
+	<strong><big><div id='coordinates_opc'></div></big></strong>
+	<small><div id='coordinates_check_message'></div></small>
+	<table width=50% cellpadding=8 cellspacing=0><tr><td align=left>
+		<div id="ITM-off">
+		<table border=0>
+			<tr>
+			<td><strong><a href="http://en.wikipedia.org/wiki/Mercator_projection"><small>GPS</small></a></strong></td>
+			<td>Lat.</td><td><input class="touch" size=8 type="text" name="lt" onchange="updateTM();"></td>
+			<td>Lon.</td><td><input class="touch" size=8 type="text" name="lg" onchange="updateTM();"></td>
+			</tr>
+		</table></div>
+		<div id="ITM">
+		<table border=0>
+			<tr>
+			<td><strong><a href="http://en.wikipedia.org/wiki/Mercator_projection"><small>GPS</small></a></strong></td>
+			<td>Lat.</td><td><input class="touch" size=8 type="text" name="lt2" onchange="updateTM();"></td>
+			<td>Lon.</td><td><input class="touch" size=8 type="text" name="lg2" onchange="updateTM();"></td>
+			</tr>
+			<tr>
+			<td><strong><a href="http://en.wikipedia.org/wiki/Irish_Transverse_Mercator" target=_new><small>ITM</small></a></strong></td>
+			<td>East</td><td><input id="ITME" class="touch" size=8 type="text" name="ITME" value="0" onchange="updateGPS();"></td>
+			<td>North</td><td><input id="ITMN" class="touch" size=8 type="text" name="ITMN" value="0" onchange="updateGPS();"></td>
+			</tr>
+		</table>
+		</div>
+	</form>
+	<p>
+	<table class="touch"><tr><td onclick="mapcoordinates();">Map Coordinates</td><td onclick="hidePageElement('coordinates');showPageElement('postcode');showPageElement('menu');"><small><strong>CLOSE</strong></small></td></tr></table>
+	</td></tr></table>
+	<div style="position:absolute;top:10px;left:10px;"  onclick="findlocation();"><img src="images/geolocation.png" height=25></div>
+</div>
+
+<!-- showplace -->
+
+<div  id="showplace" style="display:none;position:fixed;bottom:5px;left:0px;max-width:45%;z-index:1;" onclick="hidePageElement('showplace');showPageElement('place');" onmouseover="if(!turnoffmouseover){hidePageElement('showplace');showPageElement('place');}">
+<table class="touch">
+<tr><td><small> ...</small></td></tr>
+</table>
+</div>
+
+<!-- place -->
+
+<div id="place" style="position:fixed;bottom:5px;left:5px;max-width:60%;z-index:1;" onclick="hidePageElement('place');showPageElement('showplace');">
+<table class="touch">
+<tr><td><small><div onclick="showPageElement('coordinates');showPageElement('place');hidePageElement('showplace');hidePageElement('mainmenu');hidePageElement('menu');" id='place_coordinates'></div>
+<div id='placeresults'></div></small></td></tr>
+</table>
+</div>
+
+<!-- main menu -->
+
+<div style="position:fixed;top:50px;right:5px;max-width:60%;overflow:auto;z-index:1;" class="touch">
+
+	<!-- open postcode -->
+
+	<div id="postcode">
+	<table class="touch"><tr><td>
+	<form name="opc" onsubmit="return false;">
+	<small><div style="margin-bottom:10px;" id="current_location" onclick="findlocation();">TRACK LOCATION</div></small>
+	<small><div id="GPSaccuracy" style="display:none;margin-bottom:10px;" onclick=";hidePageElement('emergency_menu');showPageElement('details_region');showPageElement('details');hidePageElement('place');hidePageElement('showplace');hidePageElement('mainmenu');hidePageElement('menu');hidePageElement('postcode');if(region=='Ireland'){showPageElement('details_showprecisiontext');}else hidePageElement('details_showprecisiontext');"></div></small>
+	<table cellspacing=0 cellpadding=0 class="touch">
+	<tr><td><input size=12 type="text" id="opc" name="opc" onclick="this.select();" onmouseover="this.style.background='#CCCCCC';" onmouseout="this.style.background='transparent';" onchange="tracklocation=false;if(regionparameters(region).casesensitive==false){this.value=this.value.toUpperCase()};hidePageElement('GPSaccuracy');bluedot=false;mapOPCs(document.getElementById('opc').value);showPageElement('current_location');" style="font-weight:bold" class="touch" title="OpenPostcode"></td></tr>
+	</table>
+	</form>
+	<small><div style="margin-top:5px;" id="check_message" onclick=";hidePageElement('emergency_menu');showPageElement('details_region');showPageElement('details');hidePageElement('place');hidePageElement('showplace');hidePageElement('menu');hidePageElement('mainmenu');hidePageElement('postcode');if(region=='Ireland'){showPageElement('details_showprecisiontext');}else hidePageElement('details_showprecisiontext');"></div></small>
+	<div style="margin-top:5px;" onclick="zoomout(document.getElementById('opc').value);hidePageElement('GPSaccuracy');showPageElement('current_location');" ><small>&lt;GET SHORTER CODE&gt;</small></div>
+	
+
+	<!-- options -->
+
+	<div id="options" style="display:none;margin-top:10px;">
+	<select id="regions" name="regions" onchange="auto=true;regionstart=this.value;selectedregion=this.options[this.selectedIndex].text;document.getElementById('checkautoregion').checked=false;if(coordinateregion(OPCmapping(document.getElementById('opc').value).position,region)!=selectedregion && this.selectedIndex>1){document.getElementById('opc').value=regionstart;mapOPCs(document.getElementById('opc').value);};region=selectedregion;auto=false;mapcoordinates();"></select><br>
+	<small><input id="checkautoregion" type="checkbox" name="autooption" checked onchange="auto=this.checked">-auto-region<br><input id="checkpinoption" type="checkbox" name="pinoption" checked onchange="pin=this.checked">-pin <input id="checkboxoption" type="checkbox" name="boxoption" checked onchange="boxes=this.checked">-boxes</small>
+	</div>
+	</form>
+	</td></tr>
+	</table>
+
+	<!-- show menu -->
+	<table align=right>
+	<tr><td class="back" id="menu" class="touch" onclick="hidePageElement('options');hidePageElement('menu');hidePageElement('showplace');hidePageElement('place');showPageElement('mainmenu');"  onmouseover="if(!turnoffmouseover){hidePageElement('options');hidePageElement('menu');hidePageElement('showplace');hidePageElement('place');showPageElement('mainmenu');}"><small>SHOW MENU</small>
+	</td></tr>
+	</table>
+
+	<div style="position:absolute;top:10px;left:10px;"  onclick="findlocation();"><img src="images/geolocation.png" height=25></div>
+	</div>
+
+	<!-- expanded menu -->
+
+	<div id="mainmenu" class="touch" style="display:none;">
+	<table  class="touch" width=100%>
+	<tr><td onclick="showPageElement('details_region');showPageElement('details');hidePageElement('place');hidePageElement('showplace');hidePageElement('mainmenu');hidePageElement('postcode');;hidePageElement('emergency_menu');if(region=='Ireland'){showPageElement('details_showprecisiontext');}else hidePageElement('details_showprecisiontext');">Location Details</td></tr>
+	<tr><td onclick="showPageElement('search');hidePageElement('showplace');showPageElement('place');hidePageElement('mainmenu');hidePageElement('menu');hidePageElement('postcode');">Search Address</td></tr>
+	<tr><td onclick="showPageElement('coordinates');showPageElement('place');hidePageElement('showplace');hidePageElement('mainmenu');hidePageElement('menu');hidePageElement('postcode');">Coordinates</td></tr>
+	<tr><td onclick="hidePageElement('irish_maps');showPageElement('maps');if(region=='Ireland'){showPageElement('irish_maps');};hidePageElement('mainmenu');">Online Maps</td></tr>
+	<tr><td onclick="hidePageElement('irish_directions');showPageElement('directions');if(region=='Ireland'){showPageElement('irish_directions');};hidePageElement('mainmenu');">Get Directions</td></tr>
+	<tr><td onclick="hidePageElement('irish_info');showPageElement('explore');if(region=='Ireland'){showPageElement('irish_info');};hidePageElement('mainmenu');">Explore Area</td></tr>
+	<tr><td onclick="showPageElement('send');hidePageElement('mainmenu');if(region=='Ireland'){showPageElement('irish_send');} else hidePageElement('irish_send');if(tracklocation){showPageElement('current_location');} else {hidePageElement('GPSaccuracy');showPageElement('current_location');bluedot=false;boxes=true;pin=true;pc=pincolor;pincolor='red';mapOPCs(document.getElementById('opc').value);pincolor=pc;}">Send Location</td></tr>
+	<tr><td onclick="showPageElement('options');hidePageElement('mainmenu');hidePageElement('place');showPageElement('menu');showPageElement('showplace');">Options</td></tr>
+	<tr><td onclick="if(showdetailedabout){showPageElement('abouttext');}showPageElement('about');getElementById('about').onclick='';hidePageElement('mainmenu');showPageElement('menu');">About</td></tr>
+	<tr><td onclick="hidePageElement('mainmenu');showPageElement('menu');showPageElement('showplace');" onmouseover="if(!turnoffmouseover){hidePageElement('mainmenu');showPageElement('menu');showPageElement('showplace');}" class="back">^</td></tr>
+	</table>
+	</div>
+
+	<!-- maps -->
+
+	<div id="maps" style="display:none;">
+	<table class="touch" width=100%>
+	<tr><td onclick="hidePageElement('maps');showPageElement('mainmenu')"  onmouseover="if(!turnoffmouseover){hidePageElement('maps');showPageElement('mainmenu')}" class="back">^</td></tr>
+	</table>
+	<table class="touch" width=100%>
+	<tr><td onclick="showPageElement('links');showPageElement('geohashcode');showPageElement('worldcode');if(region=='Geohash-36'){hidePageElement('geohashcode')};if(region=='World'){hidePageElement('worldcode');}">Open Postcode</td></tr>
+	<tr><td onclick="window.open('http://osm.org/?lat='+geolatitude+'&lon='+geolongitude+'&zoom='+(( zooming > 0 ) ? zooming : 16 ),'_blank','location=yes');">OpenStreetMap</td></tr>
+	<tr><td onclick=window.open("http://maps.stamen.com/#watercolor/15/"+geolatitude+"/"+geolongitude,'_blank','location=yes');>Artistic Maps</td></tr>
+	<tr><td onclick="window.open('http://www.bing.com/maps/default.aspx?style=b&zoom='+(( zooming > 0 ) ? zooming : 13 )+'&cp='+geolatitude+'~'+geolongitude,'_blank','location=yes');">Bing Maps</td></tr>
+	<tr><td onclick=window.open("http://here.com/"+geolatitude+","+geolongitude+",17,0,0,hybrid.day",'_blank','location=yes');>Nokia Here</td></tr>
+	<tr><td onclick=window.open("http://maps.google.com/maps?q="+geolatitude+","+geolongitude,'_blank','location=yes');>Google Maps</td></tr>
+	</table>
+
+		<!-- Irish maps -->
+		<div id="irish_maps" style="display:none;">
+		<table class="touch" width=100%>
+		<tr><td onclick="osiitm=Geo2TM(deg2rad(geolatitude),deg2rad(geolongitude),ITMG);window.open('http://maps.osi.ie/publicviewer/#V1,'+Math.round(osiitm.eastings)+','+Math.round(osiitm.northings)+',7,10','_blank','location=yes');">OSI Map</td></tr>
+		</table>
+		</div>
+	</div>
+
+	<!-- directions -->
+
+	<div id="directions" style="display:none;">
+	<table class="touch" width=100%>
+	<tr><td onclick="hidePageElement('directions');showPageElement('mainmenu')" onmouseover="if(!turnoffmouseover){hidePageElement('directions');showPageElement('mainmenu')}" class="back">^</td></tr>
+	</table>
+	<table class="touch" width=100%>
+	<tr><td onclick="window.open('http://www.yournavigation.org/?flat='+curlatitude+'&flon='+curlongitude+'&tlat='+geolatitude+'&tlon='+geolongitude+'&v=motorcar&fast=1&layer=mapnik','_blank','location=yes');">OSM Directions</td></tr>
+	<tr><td onclick="window.open('http://openptmap.org/?zoom='+(( zooming > 0 ) ? zooming : 16 )+'&lat='+geolatitude+'&lon='+geolongitude+'&layers=0B000TFF','_blank','location=yes');">Transport Map</td></tr>
+	<tr><td onclick="window.open('http://addto.tomtom.com/api/home/v2/georeference?action=add&apikey=f132ee2b-6901-4748-9644-a2f6a878a303&name='+document.getElementById('opc').value+'&latitude='+geolatitude+'&longitude='+geolongitude,'_blank','location=yes');">Add to TomTom</td></tr>
+	<tr><td onclick="window.open('http://maps.google.com/maps?saddr='+curlatitude+','+curlongitude+'&daddr='+geolatitude+','+geolongitude,'_blank','location=yes');">Google Directions</td></tr>
+	</table>
+
+		<!-- Irish -->
+		<div id="irish_directions" style="display:none;">
+		<table class="touch" width=100%>
+		<tr><td onclick="window.open('http://hittheroad.ie/#from='+curlatitude+((curlatitude!='') ? ',' : '')+curlongitude+'&to='+geolatitude+','+geolongitude,'_blank','location=yes');">Hit The Road</td></tr>
+		</table>
+		</div>
+	</div>
+
+	<!-- explore -->
+
+	<div id="explore" style="display:none;">
+	<table class="touch" width=100%>
+	<tr><td onclick="hidePageElement('explore');showPageElement('mainmenu')" onmouseover="if(!turnoffmouseover){hidePageElement('explore');showPageElement('mainmenu')}" class="back">^</td></tr>
+	</table>
+	<table class="touch" width=100%>
+	<tr><td onclick="window.open('http://www.geonames.org/maps/wikipedia_'+geolatitude+'_'+geolongitude+'.html','_blank','location=yes');">Wikipedia</td></tr>
+	<tr><td onclick=window.open("http://www.google.com/search?q="+googlesearch,'_blank','location=yes');>Google Search</td></tr>
+	<tr><td onclick="window.open('http://www.flickr.com/nearby/'+geolatitude+','+geolongitude+'?show=thumb&fromfilter=1&by=everyone&taken=alltime&sort=distance','_blank','location=yes');">Flickr</td></tr>
+	<tr><td onclick="window.open('http://www.panoramio.com/map/#lt='+geolatitude+'&ln='+geolongitude+'&z=0','_blank','location=yes');">Panoramio</td></tr>
+	<tr><td onclick="window.open('http://instabam.com/#find?x='+geolatitude+'&y='+geolongitude,'_blank','location=yes');">Instagram</td></tr>
+	<tr><td onclick="window.open('http://twitter.com/search/realtime?q=geocode:'+geolatitude+','+geolongitude+',25km','_blank','location=yes');">Twitter</td></tr>
+	<tr><td onclick="window.open('http://trendsmap.com/?ll='+geolatitude+','+geolongitude+'&z=13','_blank','location=yes');">Twitter Trends</td></tr>
+	<tr><td onclick="window.open('https://wigle.net/gps/gps/Map/onlinemap2/?maplat='+geolatitude+'&maplon='+geolongitude+'&mapzoom=17','_blank','location=yes');">WigleWiFi</td></tr>
+	<tr><td onclick="window.open('http://www.flightradar24.com/'+geolatitude+','+geolongitude+'/11','_blank','location=yes');">FlightRadar24</td></tr>
+	<tr><td onclick="window.open('http://www.marinetraffic.com/ais/default.aspx?centerx='+geolongitude+'&centery='+geolatitude+'&zoom=12','_blank','location=yes');">AIS:MarineTraffic</td></tr>
+	<tr><td onclick="window.open('http://world.waze.com/livemap/?lon='+geolongitude+'&lat='+geolatitude,'_blank','location=yes');">Waze Traffic</td></tr>
+	<tr><td onclick="window.open('http://www.fourmilab.ch/cgi-bin/Yoursky?lat='+geolatitude+'&ns=North&lon='+geolongitude+'&ew=West&fov=45&azimuth=0&z=2&elements=','_blank','location=yes');">Astronomy</td></tr>
+	<tr><td onclick="window.open('http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat='+geolatitude+'&lng='+geolongitude+'&loc=Unspecified&alt=0&tz=UCT','_blank','location=yes');">ISS Passes</td></tr>
+	</table>
+
+		<!-- Irish -->
+		<div id="irish_info" style="display:none;">
+		<table class="touch" width=100%>
+		<tr><td onclick="window.open('http://fixmystreet.ie/around?latitude='+geolatitude+';longitude='+geolongitude,'_blank','location=yes');">Fix My Street</td></tr>
+		<tr><td onclick="window.open('http://www.fixmyarea.com/issues?lt='+geolatitude+'&ln='+geolongitude,'_blank','location=yes');">Fix My Area</td></tr>
+		<tr><td onclick="window.open('http://phaedrus.cs.tcd.ie/petty/petty/landowners.php#mc='+geolatitude+','+geolongitude+'&z=12','_blank','location=yes');">Historical Maps</td></tr>
+		</table>
+		</div>
+	</div>
+
+	<!-- send location -->
+	
+	<div id="send" style="display:none;">
+	<table class="touch" width=100%>
+	<tr><td onclick="hidePageElement('send');showPageElement('mainmenu')" onmouseover="if(!turnoffmouseover){hidePageElement('send');showPageElement('mainmenu')}" class="back">^</td></tr>
+	<tr><td onclick="if(!tracklocation){curaccuracy='NA';};if(document.URL.match(/^https?:/)){window.open('mailto:?subject=My%20Location&body=I%20am%20at%20'+geolatitude+','+geolongitude+' (%2B/-'+curaccuracy+'m) http://'+(( region=='Ireland' ) ? opcmap+tidy(document.getElementById('opc').value).postcode : opcmap+document.getElementById('opc').value ),'_top','location=yes');} else window.location='mailto:?subject=My%20Location&body=I%20am%20at%20'+geolatitude+','+geolongitude+' (%2B/-'+curaccuracy+'m) http://'+(( region=='Ireland' ) ? opcmap+tidy(document.getElementById('opc').value).postcode : opcmap+document.getElementById('opc').value );">Email Location</td></tr>
+	<tr><td onclick="if(!tracklocation){curaccuracy='NA';};window.location='sms:?body=I am at '+geolatitude+','+geolongitude+' (+/-'+curaccuracy+'m) http://'+(( region=='Ireland' ) ? opcmap+tidy(document.getElementById('opc').value).postcode : opcmap+document.getElementById('opc').value );">SMS Text Message</td></tr>
+	<tr><td onclick="window.open('http://twitter.com/?related=OpenPostcode&status=I%20am%20at%20'+geolatitude+','+geolongitude+'%20'+(( region=='Ireland' ) ? opcmap+tidy(document.getElementById('opc').value).postcode : opcmap+document.getElementById('opc').value )+' (via @OpenPostcode).','_blank','location=yes');">Tweet Location</td></tr>
+	<tr><td onclick="window.open('http://www.facebook.com/sharer/sharer.php?u=http://'+(( region=='Ireland' ) ? opcmap+tidy(document.getElementById('opc').value).postcode : opcmap+document.getElementById('opc').value ),'_blank','location=yes');">Facebook Share</td></tr>
+	<tr><td onclick="window.open('http://www.linkedin.com/shareArticle?mini=true>&title=Here I am.&summary=Link to my location.&source=Open Postcode&url=http://'+(( region=='Ireland' ) ? opcmap+tidy(document.getElementById('opc').value).postcode : opcmap+document.getElementById('opc').value ),'_blank','location=yes');">LinkedIn Post</td></tr>
+	<tr><td onclick="window.open('http://plus.google.com/share?url='+(( region=='Ireland' ) ? opcmap+tidy(document.getElementById('opc').value).postcode : opcmap+document.getElementById('opc').value )+'.','_blank','location=yes');">Google+ Post</td></tr>
+	<tr><td onclick="hidePageElement('send');hidePageElement('details_region');showPageElement('details');showPageElement('emergency_menu');hidePageElement('place');hidePageElement('showplace');hidePageElement('mainmenu');hidePageElement('postcode');"><strong><font color=red>Emergency</font><strong></td></tr>
+	</table>
+
+		<!-- Irish -->
+		<div id="irish_send" style="display:none;">
+		<table class="touch" width=100%>
+		<tr><td onclick="window.open('http://fixmystreet.ie/report/new?longitude='+geolongitude+'&latitude='+geolatitude,'_blank','location=yes');">Fix My Street</td></tr>
+		<tr><td onclick="window.open('http://ringbuoys.ie/SearchCountyTownSendEX.php?county='+getElementById('opc').value+'('+geolatitude+','+geolongitude+')','_blank','location=yes');">Missing Lifebouy</td></tr>
+		</table>
+		</div>
+	</div>
+</div>
+
+<!-- map -->
+
+<div id="map_canvas" style="width:100%;height:100%;z-index:0;background:transparent;"><div style="position:absolute;top:50px;left:50px;"><table><tr><td align=center><img src="images/logo-100.png"><br><small>GOOGLE MAPPING ... LOADING</small></td></tr></table></div>
+
+</body>
+</html>

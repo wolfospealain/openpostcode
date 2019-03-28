@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns = "http://www.w3.org/ns/widgets"
+    xmlns:gap = "http://phonegap.com/ns/1.0"
+    id        = "OpenPostcode"
+    version   = "1.0">
+
+    <name>Open Postcode</name>
+
+    <description>
+        Irish Postcode Mapping
+    </description>
+
+    <author href="http://www.openpostcode.org" email="openpostcodeireland@gmail.com">
+        Ian Spillane
+    </author>
+      
+<!-- https://build.phonegap.com/docs/config-xml
+
+<gap:splash src="logo-android-mobile.png" />
+<preference name="android-minSdkVersion" value="11" />
+
+-->
+
+    <preference name="target-device" value="universal" />
+    <preference name="phonegap-version" value="3.7.0" />
+    <preference name="permissions" value="none"/>
+    <feature name="http://api.phonegap.com/1.0/geolocation"/>
+
+    <preference name="load-url-timeout" value="20000" />
+
+    <icon src="images/logo-100.png" gap:role="default" default="true"/>
+
+</widget>

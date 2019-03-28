@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!-- Part of the OpenPostcode project http://www.openpostcode.org -->
+
+<html>
+<head> 
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/> 
+<title>OpenPostcode - Toolbar Button</title> 
+<style type="text/css">
+	body {padding: 10px; margin: 10px; font-family: Verdana; font-size:10pt;}
+	p {font-family: Verdana;}
+</style>
+</head>
+
+
+<body topmargin=50 leftmargin=50>
+
+<!-- button -->
+
+<table align=center cellpadding=10 cellspacing=10 bgcolor=lightgray><tr><td width=200>
+For instant access to <a href="http://www.openpostcode.org">Open Postcode</a> calculations while browsing and to quickly compare and switch between different maps (such as <i>Google Maps</i>, <i>Bing</i>, <i>OpenStreetMap</i>, <i>OSI</i> in Ireland, and many more), drag the stamp logo to your favourites toolbar, or right-click to add as a bookmark.<p>The conversion calculation is also available directly for links at <a href="http://openpostcode.x10.mx/convert.html">convert.html</a>.
+</td><td>
+<a href="javascript:
+	if((window.location.href).search('google')>0){
+		window.open(('http://openpostcode.x10.mx/convert.html?ll='+gApplication.getMap().getCenter()+'').replace(/[ ()]/g,''));
+	} else if((window.location.href).search('osi')>0){
+		window.open('http://openpostcode.x10.mx/convert.html?itm='+(window.location.href).substr(36,6)+','+(window.location.href).substr(43,6));
+	} else window.open('http://openpostcode.x10.mx/convert.html?ll='+(window.location.search).substring(5,(window.location.search).search('&'))+','+(window.location.search).substring((window.location.search).search('lon=')+4,(window.location.search).search('&zoom')));
+	void(0);
+"><img src="images/logo.png" alt="GetOPC" text="Drag me to the toolbar."></a>
+</td></tr></table>
+<!--Issue with Google Maps app in Chrome-->
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- Part of the OpenPostcode project http://openpostcode.org -->
+
+<html>
+<head> 
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/> 
+<title>OpenPostcode Conversion</title> 
+<link href="styles/convert.css?080713" rel="stylesheet" type="text/css" /> 
+<!--http://www.fieldenmaps.info/cconv/web/cconv_api_1-2-003.pdf-->
+<script language="JavaScript" type="text/javascript" src="http://www.fieldenmaps.info/cconv/web/cconv_defs.js?080713"></script>
+<script language="JavaScript" type="text/javascript" src="http://www.fieldenmaps.info/cconv/web/cconv_func.js?080713"></script>
+<script language="JavaScript" type="text/javascript" src="http://www.fieldenmaps.info/cconv/web/cconv_trans.js?080713"></script>
+<script language="JavaScript" type="text/javascript" src="http://www.fieldenmaps.info/cconv/web/cconv_params.js?080713"></script>
+<script language="JavaScript" type="text/javascript" src="http://www.fieldenmaps.info/cconv/web/cconv_frm_ie.js?080713"></script> 
+<script type="text/javascript" src="script/objects.js?080713"></script> 
+<script type="text/javascript" src="script/parameters.js?080713"></script> 
+<script type="text/javascript" src="script/utility.js?080713"></script> 
+<script type="text/javascript" src="script/openpostcode.js?080713"></script>
+<script type="text/javascript">
+
+region="Ireland"
+auto=true
+
+function getquery(){
+/* get OPC query */
+	opc=getQueryVariable("opc")
+	ll=getQueryVariable("ll")
+	itm=getQueryVariable("itm")
+	osi=getQueryVariable("osi"); if(osi>""){itm=osi} /* backwards compatibility */
+	to=getQueryVariable("to")
+	if (opc.length>0){
+		region=checksumregion(opc)
+		/* convert from OPC */
+		if (opc.substring(0,1)=="/"){opc=opc.substring(1,opc.length).toUpperCase()}
+			else opc=opc.toUpperCase()
+		if(checkcode(opc).substring(0,1)=="!"){document.location="http://iemap.org/"+opc}
+			else document.location="http://map.google.com/maps?q="+OPCmapping(tidy(opc).postcode).position.latitude+","+OPCmapping(tidy(opc).postcode).position.longitude
+		} else {
+
+		/* convert from ITM */
+		if (itm!=""){
+			region="Ireland"
+			coords=TM2Geo(+(itm.substr(0,6)),+(itm.substr(7,6)),ITMG)
+			position=new COORDINATES(Math.round(rad2deg(coords.latitude)*100000)/100000,Math.round(rad2deg(coords.longitude)*100000)/100000)
+			document.location="http://iemap.org/"+mappingOPC(position)
+		} else
+		
+		if (ll!=""){
+			position=new COORDINATES(+ll.substring(0,ll.search(",")),+ll.substr(ll.search(",")+1,ll.length-ll.search(",")))
+
+			/* convert to ITM */
+			if (to=="itm"){
+				coords=Geo2TM(deg2rad(position.latitude),deg2rad(position.longitude),ITMG)
+				document.location="http://maps.osi.ie/publicviewer/#V1,"+Math.round(coords.eastings)+","+Math.round(coords.northings)+",7,10"
+			} else
+
+			/* convert to OPC */
+			document.location="http://mapplot.org/"+mappingOPC(position)
+		}
+	}
+}
+
+</script>
+</head>
+
+<body onload="getquery();" style="background-image: null;">
+
+You are at the OpenPostcode conversion page. For instant access to the <a href="http://iemap.org">OpenPostcode<a/> from Google, the OpenStreetMap, or OSI get the <a href="button.html">toolbar button</a>. Sample parameters:
+<ul>
+<li>convert from GPS to OPC: <a href="convert.html?ll=53.349788,-6.260248">convert.html?ll=53.349788,-6.260248</a>
+<li>convert from OPC to GPS: <a href="convert.html?opc=KFPXWT7K/F">convert.html?opc=KFPXWT7K/F</a>
+<li>convert from ITM to OPC: <a href="convert.html?itm=715830,734697">convert.html?itm=715830,734697</a>
+<li>convert from GPS to ITM: <a href="convert.html?to=itm&ll=53.349788,-6.260248">convert.html?to=itm&ll=53.349788,-6.260248</a>
+</ul>
+<p>
+<small>Converting, stay tuned ...</small> 
+</body>
+</html>
